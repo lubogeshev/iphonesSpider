@@ -17,16 +17,16 @@ class IphonesSpider(scrapy.Spider):
     def parse_iphone(self, response):
         items = IphonesItem()
 
-        name = response.css('h1::text')[2].extract().strip()
+        name = response.css('h1::text').getall()[2].strip()
 
         pattern = r"'price': ([0-9]+),"
         price = response.css('script::text').re_first(pattern)
         price = float(price)
 
-        picture = response.css('link[itemprop="image"]::attr(href)').extract_first().replace(r'"', '')
+        picture = response.css('link[itemprop="image"]::attr(href)').get().replace(r'"', '')
 
-        specs_list = response.css('td.name, td.value').css('::text').extract()
-        specs = {specs_list[i]: specs_list[i+1] for i in range(len(specs_list)) if i % 2 == 0}
+        specs_list = response.css('td.name, td.value').css('::text').getall()
+        specs = {specs_list[i]: specs_list[i+1] for i in range(0, len(specs_list), 2)}
 
         items['name'] = name
         items['price'] = f'{price:.2f}'
